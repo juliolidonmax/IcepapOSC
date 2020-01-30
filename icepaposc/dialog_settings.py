@@ -17,8 +17,8 @@
 # along with IcepapOCS. If not, see <http://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from PyQt4.QtGui import QDialog
-from PyQt4.QtGui import QDialogButtonBox
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialogButtonBox
 from ui.ui_dialog_settings import Ui_DialogSettings
 
 

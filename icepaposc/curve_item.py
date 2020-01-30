@@ -17,12 +17,11 @@
 # along with IcepapOCS. If not, see <http://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from PyQt4.QtGui import QColor
-from PyQt4.QtCore import Qt
+from PyQt5.QtGui import QColor
+from PyQt5.QtCore import Qt
 from collections import namedtuple
 from threading import RLock
 from pyqtgraph import PlotCurveItem
-
 
 class CurveItem:
     """Represents a curve to be plotted in a diagram."""
