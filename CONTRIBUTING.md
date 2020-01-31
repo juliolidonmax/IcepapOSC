@@ -69,7 +69,7 @@ class IcePAPDemo(object):
     """This class is written for template purposes only"""
     
 def main():
-    print "IcePAPDemo"
+    print("IcePAPDemo")
 
 if __name__ == "__main__":
     main()

@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## [0.4.X]
+
+### Changed
+- Migrate to Python 3
+- Migrate to Qt5
+- Migrate icepap library from PyIcePAP to icepap
+
 ## [0.3.X] 
 
 ### Added
