@@ -18,7 +18,6 @@
 # -----------------------------------------------------------------------------
 
 from PyQt5.QtCore import QTimer
-# from PyQt5.QtCore import QString
 from collections import OrderedDict
 from icepap import IcePAPController
 from channel import Channel
