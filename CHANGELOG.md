@@ -4,7 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.5.x] 
+## [0.7.#]
+
+### Added
+- Application icon
+- Add configuration for the signals set folder
+
+### Removed
+- Do backups: it was moved from icepap library to IcepapCMS as snapshots
+- Status dialog: it will be implemented on the IcepapCMS console
+- Esync button: it will be implemented on the IcepapCMS
+
+### Fixed
+- Load dynamically the UI files
+- Add protection on the export signals settings
+- Show axes labels on black background configuration
+
+## [0.6.4]
+
+### Added
+- Allow to change the plot background.
+- Allow to change color and form of the signal plotted.
+- Add Trace Correction.
+- Add axis control buttons.
+- Import and Export signal set configuration to file.
+- Allow to do backups
+
+### Removed
+- Button save to file
+- Load dynamically the UI files
+
+### Fixed
+
+
+## [0.5.2] 
 
 ### Added
 - Migrate to python 3
@@ -55,5 +88,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [0.2.1]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.2.0...0.2.1
 [0.3.0]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.2.1...0.3.0
 [0.4.0]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.3.0...0.4.0
-[0.5.x]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.4.0...HEAD
+[0.5.2]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.4.0...0.5.2
+[0.6.2]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.5.2...0.6.4
+[0.7.x]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.6.7...HEAD
+
 

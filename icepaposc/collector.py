@@ -73,7 +73,9 @@ class Collector:
              ('MeasI', self._getter_meas_i),
              ('MeasIa', self._getter_meas_ia),
              ('MeasIb', self._getter_meas_ib),
-             ('MeasVm', self._getter_meas_vm)]
+             ('MeasVm', self._getter_meas_vm),
+             ('VelCurrent', self._getter_vel_current),
+             ('VelMotor', self._getter_vel_motor)]
         )
         self.host = host
         self.port = port
@@ -84,6 +86,12 @@ class Collector:
         self.channels = {}
         self.channel_id = 0
         self.current_channel = 0
+        # affine corrections for POS and ENC signals (to show them in different
+        # units)
+        self.poscorr_a = 1
+        self.poscorr_b = 0
+        self.enccorr_a = 1
+        self.enccorr_b = 0
         self.sig_list = list(self.sig_getters.keys())
 
         try:
@@ -210,61 +218,97 @@ class Collector:
         self.ticker.start(self.settings.sample_rate)
 
     def _getter_pos_axis(self, addr):
-        return self.icepap_system[addr].pos
+        x = self.icepap_system[addr].pos
+        x = x * self.poscorr_a + self.poscorr_b
+        return x
 
     def _getter_pos_tgtenc(self, addr):
-        return self.icepap_system[addr].pos_tgtenc
+        x = self.icepap_system[addr].pos_tgtenc
+        x = x * self.poscorr_a + self.poscorr_b
+        return x
 
     def _getter_pos_shftenc(self, addr):
-        return self.icepap_system[addr].pos_shftenc
+        x = self.icepap_system[addr].pos_shftenc
+        x = x * self.poscorr_a + self.poscorr_b
+        return x
 
     def _getter_pos_encin(self, addr):
-        return self.icepap_system[addr].pos_encin
+        x = self.icepap_system[addr].pos_encin
+        x = x * self.poscorr_a + self.poscorr_b
+        return x
 
     def _getter_pos_absenc(self, addr):
-        return self.icepap_system[addr].pos_absenc
+        x = self.icepap_system[addr].pos_absenc
+        x = x * self.poscorr_a + self.poscorr_b
+        return x
 
     def _getter_pos_inpos(self, addr):
-        return self.icepap_system[addr].pos_inpos
+        x = self.icepap_system[addr].pos_inpos
+        x = x * self.poscorr_a + self.poscorr_b
+        return x
 
     def _getter_pos_motor(self, addr):
-        return self.icepap_system[addr].pos_motor
+        x = self.icepap_system[addr].pos_motor
+        x = x * self.poscorr_a + self.poscorr_b
+        return x
 
     def _getter_pos_ctrlenc(self, addr):
-        return self.icepap_system[addr].pos_ctrlenc
+        x = self.icepap_system[addr].pos_ctrlenc
+        x = x * self.poscorr_a + self.poscorr_b
+        return x
 
     def _getter_pos_measure(self, addr):
-        return self.icepap_system.get_fpos(self.icepap_system[addr].addr,
-                                           'MEASURE')[0]
+        x = self.icepap_system.get_fpos(self.icepap_system[addr].addr,
+                                        'MEASURE')[0]
+        x = x * self.poscorr_a + self.poscorr_b
+        return x
 
     def _getter_dif_ax_measure(self, addr):
         pos_measure = self._getter_pos_measure(addr) / \
                       self.channels[self.current_channel].measure_resolution
-        return self._getter_pos_axis(addr) - pos_measure
+        x = self._getter_pos_axis(addr) - pos_measure
+        x = x * self.poscorr_a
+        return x
 
     def _getter_dif_ax_motor(self, addr):
-        return self._getter_pos_axis(addr) - self._getter_pos_motor(addr)
+        x = self._getter_pos_axis(addr) - self._getter_pos_motor(addr)
+        x = x * self.poscorr_a
+        return x
 
     def _getter_dif_ax_tgtenc(self, addr):
-        return self._getter_pos_axis(addr) - self._getter_pos_tgtenc(addr)
+        x = self._getter_pos_axis(addr) - self._getter_pos_tgtenc(addr)
+        x = x * self.poscorr_a
+        return x
 
     def _getter_dif_ax_shftenc(self, addr):
-        return self._getter_pos_axis(addr) - self._getter_pos_shftenc(addr)
+        x = self._getter_pos_axis(addr) - self._getter_pos_shftenc(addr)
+        x = x * self.poscorr_a
+        return x
 
     def _getter_dif_ax_ctrlenc(self, addr):
-        return self._getter_pos_axis(addr) - self._getter_pos_ctrlenc(addr)
+        x = self._getter_pos_axis(addr) - self._getter_pos_ctrlenc(addr)
+        x = x * self.poscorr_a
+        return x
 
     def _getter_enc_encin(self, addr):
-        return self.icepap_system[addr].enc_encin
+        x = self.icepap_system[addr].enc_encin
+        x = x * self.enccorr_a + self.enccorr_b
+        return x
 
     def _getter_enc_absenc(self, addr):
-        return self.icepap_system[addr].enc_absenc
+        x = self.icepap_system[addr].enc_absenc
+        x = x * self.enccorr_a + self.enccorr_b
+        return x
 
     def _getter_enc_tgtenc(self, addr):
-        return self.icepap_system[addr].enc_tgtenc
+        x = self.icepap_system[addr].enc_tgtenc
+        x = x * self.enccorr_a + self.enccorr_b
+        return x
 
     def _getter_enc_inpos(self, addr):
-        return self.icepap_system[addr].enc_inpos
+        x = self.icepap_system[addr].enc_inpos
+        x = x * self.enccorr_a + self.enccorr_b
+        return x
 
     def _getter_stat_ready(self, addr):
         return 1 if self.icepap_system[addr].state_ready else 0
@@ -304,3 +348,13 @@ class Collector:
 
     def _getter_meas_vm(self, addr):
         return self.icepap_system[addr].meas_vm
+
+    def _getter_vel_current(self, addr):
+        x = self.icepap_system[addr].velocity_current
+        x = x * self.poscorr_a
+        return x
+
+    def _getter_vel_motor(self, addr):
+        x = self.icepap_system[addr].get_velocity(vtype='MOTOR')
+        x = x * self.poscorr_a
+        return x

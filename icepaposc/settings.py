@@ -18,82 +18,96 @@
 # -----------------------------------------------------------------------------
 
 import os
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 
 
 class Settings:
     """Application settings."""
 
+    # Settings for collector
+    SAMPLE_RATE_MIN = 10  # [milliseconds]
+    SAMPLE_RATE_MAX = 1000  # [milliseconds]
+    DUMP_RATE_MIN = 1
+    DUMP_RATE_MAX = 100
+
+    # Settings for GUI
+    X_AXIS_LEN_MIN = 5  # [Seconds]
+    X_AXIS_LEN_MAX = 3600  # [Seconds]
+
+    # Settings for auto save.
+    SAVING_INTERVAL_MIN = 1  # [Minutes]
+    SAVING_INTERVAL_MAX = 24 * 60  # [Minutes]
+
     def __init__(self):
         """Initializes an instance of class Settings."""
+
         user_path = os.path.expanduser("~")
-        self.conf_file = os.path.join(user_path, ".icepaposc/settings.ini")
-        if not os.path.exists(self.conf_file):
-            self._create_file(user_path)
 
-        # Settings for collector.
-        self.sample_rate_min = 10  # [milliseconds]
-        self.sample_rate_max = 1000  # [milliseconds]
-        self.dump_rate_min = 1
-        self.dump_rate_max = 100
+        # Check folders
+        base_folder = os.path.join(user_path, '.icepaposc')
+        if not os.path.exists(base_folder):
+            os.mkdir(base_folder)
+        self.signals_set_folder = os.path.join(base_folder, 'signalset')
+        if not os.path.exists(self.signals_set_folder):
+            os.mkdir(self.signals_set_folder)
 
-        # Settings for GUI.
-        self.default_x_axis_len_min = 5  # [Seconds]
-        self.default_x_axis_len_max = 3600  # [Seconds]
-
-        # Settings for auto save.
-        self.as_interval_min = 1  # [Minutes]
-        self.as_interval_max = 24 * 60  # [Minutes]
-
-        self.sample_rate = 0
-        self.dump_rate = 0
-        self.default_x_axis_len = 0
+        # First configuration
+        self.sample_rate = 50   # [milliseconds]
+        self.dump_rate = 2  # [Seconds]
+        self.default_x_axis_len = 30
         self.use_auto_save = False
         self.use_append = False
-        self.as_interval = 5  # [Minutes]
-        self.as_folder = user_path
+        self.saving_interval = 5  # [Minutes]
+        self.saving_folder = user_path
 
+        self.conf_file = os.path.join(base_folder, "settings.ini")
         self._read_file()
 
-    def _create_file(self, user_path):
-        icepaosc_folder = os.path.join(user_path, '.icepaposc')
-        if not os.path.exists(icepaosc_folder):
-            os.mkdir(icepaosc_folder)
-        conf = SafeConfigParser()
-        conf.add_section('collector')
-        conf.add_section('gui')
-        conf.add_section('auto_save')
-        conf.set('collector', 'tick_interval', '50')  # [milliseconds]
-        conf.set('collector', 'sample_buf_len', '2')
-        conf.set('gui', 'default_x_axis_len', '30')  # [Seconds]
-        conf.set('auto_save', 'use', 'False')
-        conf.set('auto_save', 'append', 'False')
-        conf.set('auto_save', 'interval', '5')  # [Minutes]
-        conf.set('auto_save', 'folder', user_path)
-        with open(self.conf_file, 'w') as f:
-            conf.write(f)
+    def _read_file(self):
+        conf = ConfigParser()
+        conf.read(self.conf_file)
+
+        self.sample_rate = conf.getint('collector', 'tick_interval',
+                                       fallback=self.sample_rate)
+        self.dump_rate = conf.getint('collector', 'sample_buf_len',
+                                     fallback=self.dump_rate)
+        self.default_x_axis_len = conf.getint('gui', 'default_x_axis_len',
+                                              fallback=self.default_x_axis_len)
+        self.use_auto_save = conf.getboolean('auto_save', 'use',
+                                             fallback=self.use_auto_save)
+        self.use_append = conf.getboolean('auto_save', 'append',
+                                          fallback=self.use_append)
+        self.saving_interval = conf.getint('auto_save', 'interval',
+                                           fallback=self.saving_interval)
+        self.saving_folder = conf.get('auto_save', 'folder',
+                                      fallback=self.saving_folder)
+        self.signals_set_folder = conf.get('signals_set', 'folder',
+                                           fallback=self.signals_set_folder)
 
     def update(self):
         """Called when a setting has been changed."""
-        conf = SafeConfigParser()
+        conf = ConfigParser()
         conf.read(self.conf_file)
+
+        if 'collector' not in conf:
+            conf.add_section('collector')
         conf.set('collector', 'tick_interval', str(self.sample_rate))
         conf.set('collector', 'sample_buf_len', str(self.dump_rate))
+
+        if 'gui' not in conf:
+            conf.add_section('gui')
         conf.set('gui', 'default_x_axis_len', str(self.default_x_axis_len))
+
+        if 'auto_save' not in conf:
+            conf.add_section('auto_save')
         conf.set('auto_save', 'use', str(self.use_auto_save))
         conf.set('auto_save', 'append', str(self.use_append))
-        conf.set('auto_save', 'interval', str(self.as_interval))
-        conf.set('auto_save', 'folder', str(self.as_folder))
+        conf.set('auto_save', 'interval', str(self.saving_interval))
+        conf.set('auto_save', 'folder', str(self.saving_folder))
+
+        if 'signals_set' not in conf:
+            conf.add_section('signals_set')
+        conf.set('signals_set', 'folder', self.signals_set_folder)
+
         with open(self.conf_file, 'w') as f:
             conf.write(f)
-
-    def _read_file(self):
-        conf = SafeConfigParser()
-        conf.read(self.conf_file)
-        self.sample_rate = conf.getint('collector', 'tick_interval')
-        self.dump_rate = conf.getint('collector', 'sample_buf_len')
-        self.default_x_axis_len = conf.getint('gui', 'default_x_axis_len')
-        self.use_auto_save = conf.getboolean('auto_save', 'use')
-        self.use_append = conf.getboolean('auto_save', 'append')
-        self.as_interval = conf.getint('auto_save', 'interval')
-        self.as_folder = conf.get('auto_save', 'folder')

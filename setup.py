@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 # The version is updated automatically with bumpversion
 # Do not update manually
-__version = '0.5.2'
+__version = '0.6.4'
 
 # windows installer:
 # python setup.py bdist_wininst
@@ -44,7 +44,7 @@ setup(
         ],
     },
     install_requires=[
-        "PyQt5",
+        "pyqt5-sip",
         "icepap",
         'pyqtgraph',
         'numpy',
