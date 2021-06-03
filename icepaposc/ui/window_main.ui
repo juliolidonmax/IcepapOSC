@@ -17,9 +17,6 @@
    <iconset resource="resources.qrc">
     <normaloff>:/icons/icons/oscilloscope.png</normaloff>:/icons/icons/oscilloscope.png</iconset>
   </property>
-  <property name="windowOpacity">
-   <double>-6.000000000000000</double>
-  </property>
   <property name="styleSheet">
    <string notr="true">font: 9pt;</string>
   </property>
@@ -1922,8 +1919,8 @@
  </resources>
  <connections/>
  <buttongroups>
+  <buttongroup name="linestyle_radio_group"/>
   <buttongroup name="marker_radio_group"/>
   <buttongroup name="color_radio_group"/>
-  <buttongroup name="linestyle_radio_group"/>
  </buttongroups>
 </ui>
