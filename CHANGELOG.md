@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Load dynamically the UI files
 - Add protection on the export signals settings
 - Show axes labels on black background configuration
+- Wrong windows opacity configuration does not allow to see the main windows 
+  depending on the display configuration.
 
 ## [0.6.4]
 
