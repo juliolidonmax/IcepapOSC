@@ -4,7 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.7.#]
+
+## [0.8.X]
+
+### Added
+- Include button to add velocities curves.
+
+### Removed
+
+### Fixed
+- Add Manifest to include Markdown and Licence files on the package
+
+## [0.7.1]
 
 ### Added
 - Application icon
@@ -91,7 +102,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [0.3.0]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.2.1...0.3.0
 [0.4.0]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.3.0...0.4.0
 [0.5.2]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.4.0...0.5.2
-[0.6.2]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.5.2...0.6.4
-[0.7.x]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.6.7...HEAD
+[0.6.4]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.5.2...0.6.4
+[0.7.1]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.6.4...0.7.1
+[0.8.x]: https://github.com/ALBA-Synchrotron/IcepapOCS/compare/0.7.1...HEAD
 
 
