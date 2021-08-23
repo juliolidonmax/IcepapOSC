@@ -185,6 +185,7 @@ class WindowMain(QtWidgets.QMainWindow):
         self.ui.btnRemoveSel.clicked.connect(self._remove_selected_signal)
         self.ui.btnRemoveAll.clicked.connect(self._remove_all_signals)
         self.ui.btnCLoop.setDefaultAction(self.ui.actionClosed_Loop)
+        self.ui.btnVelocities.setDefaultAction(self.ui.actionVelocities)
         self.ui.btnCurrents.setDefaultAction(self.ui.actionCurrents)
         self.ui.btnTarget.setDefaultAction(self.ui.actionTarget)
         self.ui.btnClear.clicked.connect(self._clear_all)
@@ -199,6 +200,7 @@ class WindowMain(QtWidgets.QMainWindow):
         self.ui.actionClosed_Loop.triggered.connect(self._signals_closed_loop)
         self.ui.actionExport_Set.triggered.connect(self._export_signal_set)
         self.ui.actionImport_Set.triggered.connect(self._import_signal_set)
+        self.ui.actionVelocities.triggered.connect(self._signals_velocities)
         self.ui.actionCurrents.triggered.connect(self._signals_currents)
         self.ui.actionTarget.triggered.connect(self._signals_target)
         self.view_boxes[0].sigResized.connect(self._update_views)
@@ -463,6 +465,23 @@ class WindowMain(QtWidgets.QMainWindow):
         self.view_boxes[0].enableAutoRange(axis=self.view_boxes[0].YAxis)
         self.view_boxes[1].disableAutoRange(axis=self.view_boxes[1].YAxis)
         self.view_boxes[1].setYRange(-9, 10, padding=0)
+        self.view_boxes[2].enableAutoRange(axis=self.view_boxes[2].YAxis)
+
+    def _signals_velocities(self):
+        """Display a specific set of curves."""
+        self._remove_all_signals()
+        drv_addr = int(self.ui.cbDrivers.currentText())
+        self._add_signal(drv_addr, 'PosAxis', 1, QtGui.QColor(
+            255, 0, 0), QtCore.Qt.SolidLine, '')
+        self._add_signal(drv_addr, 'VelCurrent', 2, QtGui.QColor(
+            0, 255, 0), QtCore.Qt.SolidLine, '')
+        self._add_signal(drv_addr, 'VelMotor', 2, QtGui.QColor(
+            0, 127, 255), QtCore.Qt.SolidLine, '')
+        # Ajust plot axis
+        self.view_boxes[0].enableAutoRange(axis=self.view_boxes[0].YAxis)
+        self.view_boxes[1].enableAutoRange(axis=self.view_boxes[1].YAxis)
+        #self.view_boxes[1].disableAutoRange(axis=self.view_boxes[1].YAxis)
+        #self.view_boxes[1].setYRange(-9, 10, padding=0)
         self.view_boxes[2].enableAutoRange(axis=self.view_boxes[2].YAxis)
 
     def _signals_target(self):
