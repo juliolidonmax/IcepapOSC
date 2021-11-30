@@ -23,7 +23,7 @@ class Square_RadioBtn(QtWidgets.QRadioButton):
         # create a new painter on the widget
         qp = QtGui.QPainter(self)
         # create a styleoption and init it with the button
-        opt = QtGui.QStyleOptionButton()
+        opt = QtWidgets.QStyleOptionButton()
         self.initStyleOption(opt)
 
         # if there is an icon, draw it, otherwise draw a filled rect
@@ -44,7 +44,7 @@ class Square_RadioBtn(QtWidgets.QRadioButton):
         qp.setPen(blackpen)
 
         # if selected, draw a frame around it
-        if opt.state & (QtGui.QStyle.State_MouseOver | QtGui.QStyle.State_On):
+        if opt.state & (QtWidgets.QStyle.State_MouseOver | QtWidgets.QStyle.State_On):
             # ON state
             qp.drawRect(self.rect())
             # print("ON")
