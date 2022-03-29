@@ -58,6 +58,8 @@ class CurveItem:
         self.update_signature()
         if sig_name.upper().startswith("POS"): 
             self.signal_type = 1
+        elif sig_name.upper().startswith("DIF"):
+            self.signal_type = 3
         elif sig_name.upper().startswith("ENC"):
             self.signal_type = 2
         elif sig_name.upper().startswith("VEL"):
