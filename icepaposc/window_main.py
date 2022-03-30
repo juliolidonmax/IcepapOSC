@@ -503,52 +503,56 @@ class WindowMain(QtWidgets.QMainWindow):
         if self.plot_widget.sceneBoundingRect().contains(pos):
             mouse_point = self.view_boxes[0].mapSceneToView(pos)
             time_value = mouse_point.x()
-            try:
-                date = datetime.datetime.fromtimestamp(time_value)
-                pretty_time = date.strftime("%H:%M:%S.%f")[:-3]
-            except ValueError:  # Time out of range.
-                return
-            txtmax = ''
-            txtnow = ''
-            txtmin = ''
-            txtdiff = ''
-            txtlocalmin = ''
-            txtlocalmax = ''
-            text_size = 9
-            for ci in self.curve_items:
-                tmp = "<span style='font-size: {}pt; color: {};'>|"
-                tmp = tmp.format(text_size, ci.color.name())
-                if ci.in_range(time_value):
-                    txtmax += "{}{}</span>".format(tmp, ci.val_max)
-                    txtnow += "{}{}</span>".format(tmp, ci.get_y(time_value))
-                    txtmin += "{}{}</span>".format(tmp, ci.val_min)
-                    if self.cross_hair2_time != None:
-                        #print(ci.val_cross, ci.get_y(time_value))
-                        txtdiff += "{}{}</span>".format(tmp, ci.get_y(time_value) - ci.val_cross)
-                #You can enter here because of a click after a double click or after a ctrlo
-                if self.local_t1 != None and self.local_t2 != None and ci.in_range(self.local_t1) and ci.in_range(self.local_t2):
-                    txtlocalmin += "{}{}</span>".format(tmp, ci.calculate_local_min(self.local_t1, self.local_t2))
-                    txtlocalmax += "{}{}</span>".format(tmp, ci.calculate_local_max(self.local_t1, self.local_t2))
-            if self.cross_hair2_time != None:
-                tmp = "|<span style='font-size: {}pt; color: {};'>{} {}</span>"
-                txtnow += tmp.format(text_size,
-                                 str(self.fgcolor.name()), pretty_time, 
-                                 datetime.datetime.fromtimestamp(abs(time_value-self.cross_hair2_time)).strftime("%S.%f")[:-3])
-                tmp = "|<span style='font-size: {}pt; color: {};'>{} {}</span>"
-            else:
-                tmp = "|<span style='font-size: {}pt; color: {};'>{}</span>"
-                txtnow += tmp.format(text_size,
-                                 str(self.fgcolor.name()), pretty_time)
+            self.last_time_value = time_value
+            self._update_signals_text(time_value)
 
-            if self.cross_hair2_time != None: 
-                title = "<br>{}<br>{}<br>{}<br>{}".format(txtmax, txtnow, txtmin, txtdiff)
+    def _update_signals_text(self, time_value):
+        try:
+            date = datetime.datetime.fromtimestamp(time_value)
+            pretty_time = date.strftime("%H:%M:%S.%f")[:-3]
+        except ValueError:  # Time out of range.
+            return
+        txtmax = ''
+        txtnow = ''
+        txtmin = ''
+        txtdiff = ''
+        txtlocalmin = ''
+        txtlocalmax = ''
+        text_size = 9
+        for ci in self.curve_items:
+            tmp = "<span style='font-size: {}pt; color: {};'>|"
+            tmp = tmp.format(text_size, ci.color.name())
+            if ci.in_range(time_value):
+                txtmax += "{}{}</span>".format(tmp, ci.val_max)
+                txtnow += "{}{}</span>".format(tmp, ci.get_y(time_value))
+                txtmin += "{}{}</span>".format(tmp, ci.val_min)
+                if self.cross_hair2_time != None:
+                    #print(ci.val_cross, ci.get_y(time_value))
+                    txtdiff += "{}{}</span>".format(tmp, ci.get_y(time_value) - ci.val_cross)
+            #You can enter here because of a click after a double click or after a ctrlo
+            if self.local_t1 != None and self.local_t2 != None and ci.in_range(self.local_t1) and ci.in_range(self.local_t2):
+                txtlocalmin += "{}{}</span>".format(tmp, ci.calculate_local_min(self.local_t1, self.local_t2))
+                txtlocalmax += "{}{}</span>".format(tmp, ci.calculate_local_max(self.local_t1, self.local_t2))
+        if self.cross_hair2_time != None:
+            tmp = "|<span style='font-size: {}pt; color: {};'>{} {}</span>"
+            txtnow += tmp.format(text_size,
+                             str(self.fgcolor.name()), pretty_time, 
+                             datetime.datetime.fromtimestamp(abs(time_value-self.cross_hair2_time)).strftime("%S.%f")[:-3])
+            tmp = "|<span style='font-size: {}pt; color: {};'>{} {}</span>"
+        else:
+            tmp = "|<span style='font-size: {}pt; color: {};'>{}</span>"
+            txtnow += tmp.format(text_size,
+                             str(self.fgcolor.name()), pretty_time)
+
+        if self.cross_hair2_time != None: 
+            title = "<br>{}<br>{}<br>{}<br>{}".format(txtmax, txtnow, txtmin, txtdiff)
+        else:
+            if self.local_t2 != None and self.local_t1 != None: #you can't have crosshair on and display locals
+                title = "<br>{}<br>{}<br>{}".format(txtlocalmax, txtnow, txtlocalmin)
             else:
-                if self.local_t2 != None and self.local_t1 != None: #you can't have crosshair on and display locals
-                    title = "<br>{}<br>{}<br>{}".format(txtlocalmax, txtnow, txtlocalmin)
-                else:
-                    title = "<br>{}<br>{}<br>{}".format(txtmax, txtnow, txtmin)
-            self.plot_widget.setTitle(title)
-            self.vertical_line.setPos(mouse_point.x())
+                title = "<br>{}<br>{}<br>{}".format(txtmax, txtnow, txtmin)
+        self.plot_widget.setTitle(title)
+        self.vertical_line.setPos(time_value)
             
     def _mouse_clicked(self, evt):
         pos = evt[0]  # The signal proxy turns original arguments into a tuple.
@@ -1066,6 +1070,8 @@ class WindowMain(QtWidgets.QMainWindow):
                 ci.update_curve(x_min, x_max, corr_factors=self.corr_factors)
             else:
                 ci.update_curve(x_min, x_max)
+        # Update the legend 
+        self._update_signals_text(self.last_time_value)
 
         # Update encoder count to motor step conversion factor measurement
         if self.ui.chkEctsTurn.isChecked():
