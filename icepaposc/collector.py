@@ -61,6 +61,7 @@ class Collector:
              ('EncAbsenc', self._getter_enc_absenc),
              ('EncTgtenc', self._getter_enc_tgtenc),
              ('EncInpos', self._getter_enc_inpos),
+             ('EncMeasure', self._getter_enc_measure),
              ('StatReady', self._getter_stat_ready),
              ('StatMoving', self._getter_stat_moving),
              ('StatSettling', self._getter_stat_settling),
@@ -258,14 +259,13 @@ class Collector:
         return x
 
     def _getter_pos_measure(self, addr):
-        x = self.icepap_system.get_fpos(self.icepap_system[addr].addr,
+        x = self.icepap_system.get_pos(self.icepap_system[addr].addr,
                                         'MEASURE')[0]
         x = x * self.poscorr_a + self.poscorr_b
         return x
 
     def _getter_dif_ax_measure(self, addr):
-        pos_measure = self._getter_pos_measure(addr) / \
-                      self.channels[self.current_channel].measure_resolution
+        pos_measure = self._getter_pos_measure(addr)
         x = self._getter_pos_axis(addr) - pos_measure
         x = x * self.poscorr_a
         return x
@@ -307,6 +307,12 @@ class Collector:
 
     def _getter_enc_inpos(self, addr):
         x = self.icepap_system[addr].enc_inpos
+        x = x * self.enccorr_a + self.enccorr_b
+        return x
+
+    def _getter_enc_measure(self, addr):
+        x = self.icepap_system.get_fpos(self.icepap_system[addr].addr,
+                                        'MEASURE')[0]
         x = x * self.enccorr_a + self.enccorr_b
         return x
 
